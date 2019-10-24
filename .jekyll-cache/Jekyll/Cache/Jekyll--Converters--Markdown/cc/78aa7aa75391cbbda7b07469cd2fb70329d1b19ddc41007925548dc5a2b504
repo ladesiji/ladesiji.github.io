@@ -1,0 +1,50 @@
+I"]<h1 id="在wsl上安装jekyll">在wsl上安装jekyll</h1>
+
+<p>最近在参观同事的github时，无意中发现github还支持个人博客。感觉是一个非常棒的功能，准备自己来搭一个尝试一下。</p>
+
+<p>Github Page 基于jekyll来构建，简单的无需数据库的静态网站。将个人博客托管在github上，是完全免费的。<a href="http://jekyllcn.com/">Jekyll中文网站</a></p>
+
+<p>下面开始安装Jekyll。</p>
+
+<h2 id="安装环境">安装环境</h2>
+
+<p>Jekyll是在Linux 环境运行的，我的win10电脑中有ubuntu18.04。就用它了。</p>
+
+<ol>
+  <li>
+    <p>安装前先更新一下。</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">sudo </span>apt-get update <span class="nt">-y</span> <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get upgrade <span class="nt">-y</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装Ruby。</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get insall ruby
+<span class="nb">sudo </span>apt-get insall ruby-dev
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装jekyll。</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll bundler
+</code></pre></div>    </div>
+    <p>这里一定要强调一下，因为有一个大坑在这里。前面安装都很顺利，安装到这里时，提示没有<code class="highlighter-rouge">permissions for the /var/lib/gems/2.5.0 directory</code> 我输入sudo 后安装成功了，但jekyll 确总是跑不起来，提示有各种库没有安装。再仔细看安装说明，才发现有一行提示<code class="highlighter-rouge">(Note: no sudo here.)</code> 但是不用sudo 确实安装不上啊。看了好几个解决方案，也没有看懂究竟是啥原因，最后直接按人家的解决方案走吧：</p>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'export PATH="$HOME/.gem/bin:$PATH"'</span> <span class="o">&gt;&gt;</span> ~/.zshrc
+<span class="nb">echo</span> <span class="s1">'export GEM_HOME=~/.gem'</span> <span class="o">&gt;&gt;</span> ~/.zshrc
+<span class="nb">echo</span> <span class="s1">'export GEM_PATH=~/.gem'</span> <span class="o">&gt;&gt;</span> ~/.zshrc
+<span class="nb">source</span> ~/.zshrc
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="主题">主题</h2>
+<p>从<a href="http://jekyllthemes.org/">Jekyll Themes</a> 找了一下简单的主题，下载下来，先用<code class="highlighter-rouge">jekyll serve</code> 跑一下，能成功渲染的话，就可以修改<code class="highlighter-rouge">_config.yml</code>文件，改成自己的名字，上传到<code class="highlighter-rouge">github-pages</code>的仓库中，就可以了。
+这一步其实也有很多坑，有很多好看的主题，复杂的主题用了许多插件或框架，如果本地的<code class="highlighter-rouge">jekyll</code>配置不对，跑不起来，各种提示错误。找个简单的主题可以省一些事情，先把站点弄起来，花哨的东西以后再说。</p>
+
+<p>资质愚钝，弄这个网站花了整整一天时间。目前这相主题中还有地方不会用，需要后续修正</p>
+<ul>
+  <li>插入Python代码后 代码片段的高亮和主题比较丑陋，但不知道怎么修改。</li>
+  <li>主题有文章标签分类功能，需要改为自己的标签，还不会修改。</li>
+</ul>
+:ET

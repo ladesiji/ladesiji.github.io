@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "在wsl上安装jekyll"
-categories: [tool]
+categories: [tools]
 ---
 
 # 在wsl上安装jekyll

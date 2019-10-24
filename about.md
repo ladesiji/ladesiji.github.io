@@ -1,12 +1,22 @@
 ---
 layout: page
 title: About
-subtitle: Just who the hell you think I am?
+subtitle: litany against fear
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+I must not fear.
+Fear is the mind-killer.  
 
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
+Fear is the little-death that brings total obliteration.  
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
+I will face my fear.  
+
+I will permit it to pass over me and through me.  
+
+And when it has gone past I will turn the inner eye to see its path.  
+
+Where the fear has gone there will be nothing.  
+
+Only I will remain.  
+

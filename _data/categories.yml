@@ -1,8 +1,11 @@
-- slug: design
-  name: Design
+- slug: python
+  name: Python
 
 - slug: tools
   name: Tools
 
-- slug: productivity
-  name: Productivity
+- slug: other
+  name: Other
+
+- slug: notes
+  name: Notes
