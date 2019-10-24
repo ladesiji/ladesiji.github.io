@@ -1,0 +1,84 @@
+I"e?<h2 id="需求分析">需求分析</h2>
+<p>老婆是一名小会计，最近接到单位的通知，要会计考试了，而且领导扬言考试结果要影响绩效云云，老婆向来胆小怕事，生怕自己考不过，白天看，晚上也抱着个手机刷题。看她这个样子，我问她有什么可以帮忙的没有，她向我提了一个需求：考试是在一个网上平台上，目前可以在平台上进行不限次数模拟考试，但是模拟考试每次题目只有20道，想把模拟考试的题目保存下来。我看了一个她的模拟考试页面，里面可以显示答案，想了一下，无非是将网页中的题目、选项、答案都用保存到EXCEL中嘛，便一口应承下来。</p>
+<h2 id="coding-过程">coding 过程</h2>
+<p>将模拟考试的的页面保存下来一份，开始分析结构和需要的字段，这里我使用<code class="highlighter-rouge">xpath</code>来解析<code class="highlighter-rouge">html</code> （主要还是我不会<code class="highlighter-rouge">beautifulsoup</code>），由于 <code class="highlighter-rouge">xpath</code> 不熟练，还要看着文档一步一步调试，这一部分最耗时。
+题目和答案都相对比较容易，但是选择题的选项是不固定的，99%都是4个选项，也有3个、5个和6个的，这样的话和题目对应起来的时候不能按4的倍数来搞，稍微费了一点脑筋。最后将得到的题目列表、答案列表、选项列表对应项合并起来，每个题目一个<code class="highlighter-rouge">list</code> 最后再使用<code class="highlighter-rouge">pandas</code>将结果写进<code class="highlighter-rouge">EXCEL</code>中。</p>
+<h2 id="代码">代码</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">html_unpack</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+    <span class="s">"""将html 中包含的题目保存出来
+    输出为元组，第一部分为选择题，第二部分为判断题
+    """</span>
+    <span class="c1"># 使用 xpath 来解析 html 中需要的字段
+</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">HTML</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>     
+    <span class="c1"># 匹配选择题
+</span>    <span class="n">choise_questions</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//div[@data-current="exam/exam/question/types/answer/choise:content"]/div/text()'</span><span class="p">)</span>
+    <span class="c1"># 匹配判断题
+</span>    <span class="n">judgement_questions</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//div[@data-current="exam/exam/question/types/answer/judgement:content"]/div/text()'</span><span class="p">)</span>
+    <span class="c1"># 匹配全部答案
+</span>    <span class="n">answer</span> <span class="o">=</span>  <span class="n">s</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//div[@class="show-answer"]/div/div/div/text()'</span><span class="p">)</span>
+    <span class="c1"># 匹配选择题的选项部分
+</span>    <span class="n">choise_options_part1</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//span[@class="pull-left option-num"]/text()'</span><span class="p">)</span>
+    <span class="n">choise_options_part2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s">'//div[@class="answer-options m-left"]/text()'</span><span class="p">)</span>
+    
+    <span class="c1"># 将获取的数据规范一下，去掉换行
+</span>    <span class="n">answer_options</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">zip</span><span class="p">(</span><span class="n">choise_options_part1</span><span class="p">,</span> <span class="n">choise_options_part2</span><span class="p">)))</span>
+    <span class="n">choise_questions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'</span><span class="se">\u3000</span><span class="s">'</span><span class="p">,</span><span class="s">' '</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">choise_questions</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="n">judgement_questions</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">judgement_questions</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">"标准答案："</span><span class="p">,</span><span class="s">""</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">answer</span><span class="p">]</span>
+    
+    <span class="c1"># 将每道选择题的选项合并到一个列表中。由于选项不是固定4个，所以需要处理一下。
+</span>    <span class="n">answer_options_list</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">choise_options_part1</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">'A.'</span><span class="p">))]</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">answer_options</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">"A"</span><span class="p">:</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">answer_options_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    
+    <span class="c1"># 将选择题按题目、答案、选项的顺序排好，格式为 [[question1, answer1, opention1], ...]
+</span>    <span class="n">result_choise</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">zip</span><span class="p">(</span><span class="n">choise_questions</span><span class="p">,</span> <span class="n">answer</span><span class="p">[:</span><span class="mi">16</span><span class="p">],</span> <span class="n">answer_options_list</span><span class="p">)))</span>
+    <span class="c1"># 将判断题按题目、答案的顺序排好，格式为 [[question1, answer1], ...]
+</span>    <span class="n">result_judgement</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">zip</span><span class="p">(</span><span class="n">judgement_questions</span><span class="p">,</span> <span class="n">answer</span><span class="p">[</span><span class="mi">16</span><span class="p">:])))</span>
+    <span class="k">return</span> <span class="n">result_choise</span><span class="p">,</span> <span class="n">result_judgement</span>
+
+<span class="k">def</span> <span class="nf">read_html</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">'r'</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 获取文件列表
+</span>    <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">'2/123/'</span><span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">'2/123'</span><span class="p">)</span> <span class="k">if</span> <span class="s">"html"</span> <span class="ow">in</span> <span class="n">i</span><span class="p">]</span>
+    
+    <span class="c1"># 循环处理每个文件，并将处理后的结果汇总
+</span>    <span class="n">result_choise</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">result_judgement</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">read_html</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>           <span class="c1"># 调用读取函数
+</span>        <span class="n">result</span> <span class="o">=</span> <span class="n">html_unpack</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>    <span class="c1"># 调用解析函数
+</span>        <span class="n">result_choise</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>    <span class="c1"># 保存选择题
+</span>        <span class="n">result_judgement</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># 保存判断题
+</span>    
+    <span class="c1"># 使用pandas 将处理好的文件写进 excel 中
+</span>    <span class="c1"># 选择题的选项列不固定，有时有五个选项，有时有六个选项，这里有个小BUG，如果列名和选项个数不对应，会报错。
+</span>    <span class="n">choise_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result_choise</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'题目'</span><span class="p">,</span> <span class="s">'答案'</span><span class="p">,</span> <span class="s">'option1'</span><span class="p">,</span> <span class="s">'option2'</span><span class="p">,</span> <span class="s">'option3'</span><span class="p">,</span> <span class="s">'option4'</span><span class="p">,</span> <span class="s">'option5'</span><span class="p">,</span> <span class="s">'option6'</span><span class="p">])</span>
+    <span class="n">judegment_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result_judgement</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'题目'</span><span class="p">,</span> <span class="s">'答案'</span><span class="p">])</span>
+    <span class="c1"># 数据按题目去重
+</span>    <span class="n">choise_df</span> <span class="o">=</span> <span class="n">choise_df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s">'题目'</span><span class="p">)</span>
+    <span class="n">judegment_df</span> <span class="o">=</span> <span class="n">judegment_df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s">'题目'</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="s">'会计自测4.xls'</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+        <span class="n">choise_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="n">sheet_name</span><span class="o">=</span><span class="s">'选择'</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">judegment_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span><span class="n">sheet_name</span><span class="o">=</span><span class="s">'判断'</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+</code></pre></div></div>
+<h2 id="输出">输出</h2>
+<p>试着跑了125套模拟题，速度很快，3秒内出结果。就是保存125个模拟考页面比较麻烦，花了将近1个小时才保存完，因为这是一次性的需求，也懒得再去分析网站写爬虫了。</p>
+:ET
