@@ -17,7 +17,7 @@ categories: [tools]
 ## VScode插件
 
 插件有两个，第一个是VScode-scheme，这个插件支持代码高亮，没什么好说的，安装了就能用。第二个是Code Runner，这个能将代码一键运行，主要的问题就是设置Code Runner。在VScode => settings => Extensions => Run Code Configuration 中选择 `Executor Map` 点击下面的 `Edit in settings.json` 进行编辑页面，如下图  
-![示例](/image/Code-Runner-1.jpg)
+<center>![示例](../image/Code-Runner-1.jpg)</center>  
 
 在其中编辑Racket 的解释器，如下：
 
@@ -36,5 +36,5 @@ categories: [tools]
 
 ## 运行效果
 
-示例的代码是SICP第二章的第一个课后题，使用`cons（）`来实现有理数的加减乘除运算。如下图：  
-![Image text](/image/Code-Runner-2.jpg)  
+示例的代码是SICP第二章的第一个课后题，使用`cons（）`来实现有理数的加减乘除运算。如下图：
+<center>![运行效果](../image/Code-Runner-2.jpg)</center> 

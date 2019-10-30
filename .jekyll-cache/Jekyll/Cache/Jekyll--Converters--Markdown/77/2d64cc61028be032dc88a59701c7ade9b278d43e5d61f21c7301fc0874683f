@@ -1,7 +1,7 @@
-I"e?<h2 id="需求分析">需求分析</h2>
-<p>老婆是一名小会计，最近接到单位的通知，要会计考试了，而且领导扬言考试结果要影响绩效云云，老婆向来胆小怕事，生怕自己考不过，白天看，晚上也抱着个手机刷题。看她这个样子，我问她有什么可以帮忙的没有，她向我提了一个需求：考试是在一个网上平台上，目前可以在平台上进行不限次数模拟考试，但是模拟考试每次题目只有20道，想把模拟考试的题目保存下来。我看了一个她的模拟考试页面，里面可以显示答案，想了一下，无非是将网页中的题目、选项、答案都用保存到EXCEL中嘛，便一口应承下来。</p>
+I"�><h2 id="需求分析">需求分析</h2>
+<p>老婆单位最近要会计考试了，我问她有什么可以帮忙的没有，她向我提了一个需求：考试是在一个网上平台上，目前可以在平台上进行不限次数模拟考试，但是模拟考试每次题目只有20道，想把模拟考试的题目保存下来。我看了一个她的模拟考试页面，里面可以显示答案，想了一下，就是将网页中的题目、选项、答案都用保存到EXCEL中，便一口答应。</p>
 <h2 id="coding-过程">coding 过程</h2>
-<p>将模拟考试的的页面保存下来一份，开始分析结构和需要的字段，这里我使用<code class="highlighter-rouge">xpath</code>来解析<code class="highlighter-rouge">html</code> （主要还是我不会<code class="highlighter-rouge">beautifulsoup</code>），由于 <code class="highlighter-rouge">xpath</code> 不熟练，还要看着文档一步一步调试，这一部分最耗时。
+<p>将模拟考试的的页面保存下来一份，开始分析结构和需要的字段，这里我使用<code class="highlighter-rouge">xpath</code>来解析<code class="highlighter-rouge">html</code> （主要是不会<code class="highlighter-rouge">beautifulsoup</code>），由于 <code class="highlighter-rouge">xpath</code> 不熟练，还要看着文档一步一步调试，这一部分最耗时。
 题目和答案都相对比较容易，但是选择题的选项是不固定的，99%都是4个选项，也有3个、5个和6个的，这样的话和题目对应起来的时候不能按4的倍数来搞，稍微费了一点脑筋。最后将得到的题目列表、答案列表、选项列表对应项合并起来，每个题目一个<code class="highlighter-rouge">list</code> 最后再使用<code class="highlighter-rouge">pandas</code>将结果写进<code class="highlighter-rouge">EXCEL</code>中。</p>
 <h2 id="代码">代码</h2>
 
