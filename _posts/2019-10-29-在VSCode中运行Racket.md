@@ -37,6 +37,4 @@ categories: [tools]
 ## 运行效果
 
 示例的代码是SICP第二章的第一个课后题，使用`cons（）`来实现有理数的加减乘除运算。如下图：  
-![Image text](/image/Code-Runner-2.jpg)  
-![image](https://github.com/ladesiji/ladesiji.github.io/blob/master/image/Code-Runner-1.jpg)
-![test](https://github.com/ladesiji/ladesiji.github.io/blob/master/image/test.png)
+![Image text](/image/Code-Runner-2.jpg)
