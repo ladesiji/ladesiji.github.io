@@ -27,7 +27,7 @@ categories: [tools]
         "racket": "cd C:\\Program Files\\Racket && racket",
         "scheme": "cd C:\\Program Files\\Racket && racket"
     }
-```  
+```
 
 这里也有两个地方比较坑。
 
