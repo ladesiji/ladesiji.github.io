@@ -1,22 +1,44 @@
 ---
 layout: page
 title: About
-subtitle: litany against fear
+subtitle: 你好，少平
 permalink: /about/
 ---
 
-I must not fear.
-Fear is the mind-killer.  
+*2019年4月8日 17:23
+作者:王赞京*
 
-Fear is the little-death that brings total obliteration.  
+你好，少平  
+欢迎你的到来  
+你那么急切  
+越过了预定的日期  
+  
+你好，少平  
+欢迎你的到来  
+爸爸妈妈欣喜若狂  
+爷爷奶奶措手不及  
 
-I will face my fear.  
+你好，少平  
+欢迎你的到来  
+你那么顽皮  
+初次见面就使我们又惊又喜  
 
-I will permit it to pass over me and through me.  
+你好，少平  
+欢迎你的到来  
+你像天使一样  
+为我们平淡的生活激起新的涟漪  
 
-And when it has gone past I will turn the inner eye to see its path.  
+你好，少平  
+欢迎你的到来  
+你是健壮的天使  
+我爱你，心里流淌着甜蜜  
 
-Where the fear has gone there will be nothing.  
+少平，琦琦  
+我爱你们  
+清澈的明眸和无邪的笑声  
+使我的灵魂得到洗礼  
 
-Only I will remain.  
-
+我爱你们  
+这是我生命的意义  
+我爱你们  
+这是我生命的全部意义  
