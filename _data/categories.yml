@@ -1,6 +1,9 @@
 - slug: python
   name: Python
 
+- slug: leetcode
+  name: LeetCode
+
 - slug: tools
   name: Tools
 
@@ -9,6 +12,3 @@
 
 - slug: notes
   name: Notes
-
-- slug: leetcode
-  name: LeetCode
