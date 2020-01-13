@@ -1,0 +1,524 @@
+---
+layout: post
+title: LeetCode探索模块-树部分 
+subtitle: 题号 [104, 98, 101, 102, 108]
+categories: [leetcode]
+---
+
+
+最近有空，再来刷一点leetcode，接着把以前没做完的探索模块做完，主要的考虑是两点：一是锻炼一下脑子，二是练练手，长时间不写代码容易手生。本着每天一道题的思路，开始了自虐之旅。果然还是难啊，一周做了5道题，自己只做出来两道，还有一道是错的。剩下的三道连思路都没有，只能去参考一下题解。这都是标着`简单`的题目啊，我怎么看都不像啊。看完题解后，恍然大悟，一看就会，一写就废。为了让学习到的题解能够印象深刻一些，也方便下次做还不会，特地花时间总结一下。  
+
+## 104.二叉树的最大深度
+
+> 给定一个二叉树，找出其最大深度。
+> 二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+> 说明: 叶子节点是指没有子节点的节点。
+> 示例：
+> 给定二叉树 [3,9,20,null,null,15,7]，
+
+```cmd
+     3  
+    / \  
+   9  20  
+     /  \  
+    15   7  
+```
+
+> 返回它的最大深度 3 。
+
+### 解题思路-104
+
+唉，当看到这道题的时候，完全没有想法，直接上官方题解。  
+
++ 递归法： 当前节点的最大深度 = `max(左树深度 + 1, 右树深度 + 1)`  
++ DFS: 使用DFS算法，在循环每个节点时，加入深度变量。
+
+### 递归法
+
+非常简捷的方法，清晰优雅
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        if root is None:
+            return 0
+        left = self.maxDepth(root.left) + 1
+        right = self.maxDepth(root.right) + 1
+        return max(left, right)
+```
+
+### DFS
+
+关键点在于构造一个深度和节点的元组。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        stack, depth = [], 0
+        if root is not None:
+           stack.append((1, root))
+        while stack:
+            current_depth, root = stack.pop()
+            depth = max(depth, current_depth)  # 记录DFS过程中最大的深度值
+            if root.left:
+                stack.append((current_depth + 1, root.left))  # 传入数据为 tuple
+            if root.right:
+                stack.append((current_depth + 1, root.right))
+        return depth
+```
+
+## 98.验证二叉搜索树
+
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+
+假设一个二叉搜索树具有如下特征：
+
+节点的左子树只包含小于当前节点的数。
+节点的右子树只包含大于当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+
+示例 1:
+
+输入:
+
+```cmd
+   2
+  / \
+ 1   3
+```
+
+输出: true
+示例 2:
+
+输入:
+
+```cmd
+    5
+   / \
+ 1   4
+    / \
+   3   6
+```
+
+输出: false
+解释: 输入为: [5,1,4,null,null,3,6]。
+根节点的值为 5 ，但是其右子节点值为 4 。
+
+### 解题思路-98
+
+这道题依旧两眼一抹黑，直接上官方题解。
+二叉搜索树的一个特征就是中序遍历后为一个有序数组，这个特征可以用来做为检测的依据。
+
++ 解法一： 采用递归思想，传递边界数来判断
++ 解法二： 二叉搜索树中序遍历后，就是一个有序数组。先中序遍历，再验证是否有序。
+
+### 递归法-98
+
+关键在于递归时传递的两个边界。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isValidBST(self, root: TreeNode) -> bool:
+        def helper(root, mn, ma):
+            if root is None:
+                return True
+            if root.val >= mn or root.val <= ma:
+                return False
+            return helper(root.left, mn, root.val) and helper(root.right, root.val, ma)
+        # 初始的边界参数用 正负无穷大 来代替
+        return helper(root, float('-inf'), float('inf'))
+```
+
+### 中序遍历-98
+
+这个解法很精妙，因为对中序遍因不熟悉，刚开始看答案都看不懂。
+
+```python
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isValidBST(self, root: TreeNode) -> bool:
+        stack, inorder = [], float('-inf')
+        while stack or root:
+            while root:
+                stack.append(root)
+                root = root.left
+            root = stack.pop()
+            # inorder 保存中序遍历过程中上个节点值
+            # 依次比较当前节点与inorder值的大小
+            # 来检查中序遍历结果是否有序。
+            if root.val < inorder:
+                return False
+            inorder = root.val
+            root = root.right
+        return True
+
+```
+
+## 101.对称二叉树
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+```cmd
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+```
+
+但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+
+```cmd
+    1
+   / \
+  2   2
+   \   \
+   3    3
+```
+
+### 解题思路-101
+
+做这道题的时候，由于刚做完上的中序遍历题，认真的学习了一下中序遍历方法，到这个题目的时候，还没忘记。想到中序遍历既然可以看作是二叉树在X轴的一维投影，那我先中序遍历，再判断结果是否是回文(前面做数组题目时写过)不就可以了么。这突然的灵光乍现让我大吃一惊，没想到自己竟然能举一反三了，这么难的题目也有思路了，赶紧写下来跑一跑。  
+
+事实证明这个思路是错的，具体怎么错的，下面再解释，上代码先：
+
+### 个人方法
+
+这个方法能将测试示例跑通，但是提交结果是错误的。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        # 用中序遍历 将节点值 存入 数组，逐层检查是否是回文结构。
+        stack, visited = [], []
+        while stack or root:
+            while root:
+                stack.append(root)
+                root = root.left
+            root = stack.pop()
+            visited.append(root.val)
+            root = root.right
+        # 再写一个判断回文的函数
+        def isPalindrome(array):
+            if len(array) <= 1:
+                return True
+            return array[0] == array[-1] and isPalindrom(array[1:-1])
+        return isPalindrom(visited)
+```
+
+主要的错误原因非满二叉树在转换成一维的时候有信息丢失，导致镜像二叉树中序遍历后一定是回文，但中序遍历数组回文的不一定是镜像二叉树。下面我举一个例子：
+
+```cmd
+
+           1
+        /    \
+       2      2
+        \      \
+         2      2
+```
+
+上面的例子中，中序遍历后为`[2, 2, 1, 2, 2]`，是符合回文结构，但明显不是镜像二叉树。示例的跑通了，提交测试后就不通过了。
+
+所以费了办天的功夫，最终是错的，我们还来看官方题解。
+
+### 递归解法-101
+
+看到这个解法，让我浑身一震，直是想不到。  
+
+递归的思路，就是将问题化简成重复的子问题。 于这个题目来说：
+
++ 在根节点就是左树等于右树。
++ 左树的左子树 等于右树的右子树
++ 左树的右子树 等于右树的左子树
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        # 定义一个递归过程，来比较两个树是否相等
+        def isMirror(root1, root2):
+            # 前两个条件将 root1 和 root2 有 None 情况的都排除掉
+            if root1 is None and root2 is None:
+                return True
+            if root1 is None or root2 is None:
+                return False
+            if root1.val != root2.val:
+                reutrn False
+            return isMirror(root1.left, root2.right) and isMirror(root1.right, root2.left)
+        if root is None:
+            return True
+        return isMirror(root.left, root.right)
+
+```
+
+### 迭代解法-101
+
+迭代的方法用DFS或BFS都可以，没有区别，关键在于构造一个比较对象，就是复制一个左右相反的树，再来逐一比较。
+
+```python
+
+# answer two
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        stack = [root, root]
+        while stack:
+            node1 = stack.pop()
+            node2 = stack.pop()
+            if node1 is None and node2 is None:
+                continue
+            if node1 is None or node2 is None:
+                reutrn False
+            if node1.val != node2.val:
+                return False
+            stack.append(root1.left)
+            stack.append(root2.right)
+            stack.append(root1.right)
+            stack.append(root2.lef)
+
+        return True
+```
+
+## 102.二叉树的层次遍历
+
+给定一个二叉树，返回其按层次遍历的节点值。 （即逐层地，从左到右访问所有节点）。  
+
+例如:  
+给定二叉树: [3,9,20,null,null,15,7]  
+
+```cmd
+    3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+返回其层次遍历结果：
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+
+### 解题思路-102
+
+这首题是惟一一道独自完成的题目。哈哈哈哈！不容易啊，终于没有看答案做出来一道了，让我再高兴一会儿。  
+
+拿到题目，看到按层遍历，就想到了BFS，只有一个困难就是每一层之前要分开。我想了一会儿，可以用两下变量来标记每一层的开始和结束节点。
+
+### 个人方法-102
+
+我的代码：
+
+```python
+
+## my solution
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        queue, visited, result = [], [], []
+        if root is not None:
+            queue.append(root)
+        base, end = root, root
+        while queue:
+            root = queue.pop(0)
+            visited.append(root.val)
+            if root.left:
+                queue.append(root.left)
+                end = root.left
+            if root.right:
+                queue.append(root.right)
+                end = root.right
+            # base 表示当前层最后一个节点
+            # end 表示下一层最后一个节点
+            # 当 base 等于 root 时，当前层节点遍历完成
+            # 在 visited 中添加层结束标识，并让 base = end
+            if base == root:
+                visited.append(None)
+                base == end
+
+        # 处理带有层标记的数组
+        start = 0
+        for i, v in enumerate(visited):
+            if v in None:
+                result.append(visited[start:i])
+                start = i + 1
+        return result
+```
+
+虽然这段代码也能跑通，但确实不怎么样，时间上来说每个节点都循环了两遍，空间上更是用了三个数组。  
+
+### 递归解法-102
+
+官方的题解一，递归解法：构造一个节点与层的序对，将对应层的节点值添加到对应的列表中。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        levels = []
+        if root is None:
+            return levels
+        def helper(root, level):
+            if len(levels) == level:
+                levels.append([])
+            levels[level].append(root.val)
+            if root.left:
+                helper(root.left, level + 1)
+            if root.right:
+                helper(root.right, level + 1)
+         helper(root, 0)
+
+         return levels
+```
+
+### 迭代解法-102
+
+迭代的解法也是用BFS，不过这个BFS非常巧妙，它在`while`循环节点的同时，又嵌套了一个`for`循环，`while`循环每次一整层，`for`循环每次循环一层内的节点。  
+这个解法的关键构思在于：每一层的最后一个节点从队列`queue`中弹出后，`queue`队列的长度刚好是下一层所有节点的数目。
+
+```python
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        levles = []
+        if root is None:
+            return levels
+        # 使用 levels 存储最终结果，level表示当前层
+        level = 0
+        queue = [root,]
+        while queue:
+            levels.append([])  # 每次while循环一层，先添加一个当前层的列表
+            current_level = len(queue)  # 当前层的节点个数
+            for i in range(current_level):  # 使用 for 来遍历当前层的节点
+                root = queue.pop(0)
+                levels[level].append(root.val)
+                if root.left:
+                    queue.append(root.left)
+                if root.right:
+                    queue.append(root.right)
+            level += 1  # 当前层结束后 层数 + 1
+
+        return levels
+```
+
+## 108.将有序数组转换为二叉搜索树
+
+将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
+
+本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+
+示例:
+给定有序数组: [-10,-3,0,5,9],
+
+一个可能的答案是：[0,-3,9,-10,null,5]，它可以表示下面这个高度平衡二叉搜索树：
+
+```cmd
+      0
+     / \
+   -3   9
+   /   /
+ -10  5
+```
+
+### 解题思路-108
+
+这道题目解题思路完全没有，想了半个小时，直接放弃。
+
+官方的递归题解比较好懂，数组的中点肯定是根，左半部分数组，就是左子树了，右半部分数组是右子树，递归进行，边界条件是数组为空。
+
+迭代的解法没有看懂，就不录了。
+
+### 递归解法-108
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
+        if not nums:
+            return None
+        mid = len(nums) // 2
+        root = TreeNode(nums[mid])
+        root.left = self.sortedArrayToBST(nums[:mid])
+        root.right = self.sortedArrayToBST(nums[mid+1:])
+        return root
+```
+
+## 总结
+
+Leetcode 探索部分关于树的5道*`简单`*题目已经全部抄完了，还挺长的，希望下次碰到时能直接做出来，不用回来翻文章。  
