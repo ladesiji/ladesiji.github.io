@@ -1238,7 +1238,7 @@ a = [21, -93, -68, -94, 86, 117, -19, -68, -92, 33, 50, 118, 16, 13, 1, -
 t = ''.join([hex((i + 256) % 256)[2:].rjust(2, '0') for i in a])
 print(t)
 # 15a3bca25675edbca4213276100d01f1f3030467ee511e4436a32ce95d62053b
-c = a2b_hex(hex(int('0x' + t,16))[2:]) # 转换为字节码
+c = a2b_hex(t) # 转换为字节码
 def AES_Decrypt(key, data):
     cipher = AES.new(key.encode(),AES.MODE_ECB)
     text_decrypted = cipher.decrypt(data)
