@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Pandas 学习总结 
-subtitle: 采坑记录
-categories: [leetcode]
+subtitle: 笔记 
+categories: [python]
 ---
 
 最近几个月，写了几个小工具，都是用Pandas来处理工作中的EXCEL表格，将一些常用的，流程化的东西用工具来处理。
